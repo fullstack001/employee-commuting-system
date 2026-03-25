@@ -30,7 +30,7 @@ exports.list = async (req, res) => {
     if (req.query.active === 'false') filter.isActive = false;
     const members = await Member.find(filter)
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ createdAt: -1 });
     res.json(members);
   } catch (err) {
@@ -43,7 +43,7 @@ exports.getOne = async (req, res) => {
     const filter = { _id: req.params.id, ...listFilter(req) };
     const member = await Member.findOne(filter)
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .populate('createdBy', 'name email');
     if (!member) return res.status(404).json({ message: 'Member not found' });
     res.json(member);
@@ -54,9 +54,9 @@ exports.getOne = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { name, email, phone, unit, role } = req.body;
-    if (!name || !unit || !role) {
-      return res.status(400).json({ message: 'Name, unit, and role are required' });
+    const { name, unit, position } = req.body;
+    if (!name || !unit || !position) {
+      return res.status(400).json({ message: 'Name, unit, and position are required' });
     }
     const memberId = await nextMemberId();
     const qrCodeText = memberId;
@@ -68,10 +68,8 @@ exports.create = async (req, res) => {
     const member = await Member.create({
       memberId,
       name: String(name).trim(),
-      email: email || '',
-      phone: phone || '',
       unit,
-      role,
+      position,
       qrCodeText,
       qrCodeImage: relativePath,
       profileImage,
@@ -80,7 +78,7 @@ exports.create = async (req, res) => {
     });
     const populated = await Member.findById(member._id)
       .populate('unit', 'name code')
-      .populate('role', 'name code');
+      .populate('position', 'name code');
     res.status(201).json(populated);
   } catch (err) {
     if (err.code === 11000) return res.status(400).json({ message: 'Duplicate member or QR' });
@@ -91,21 +89,19 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const filter = { _id: req.params.id, ...listFilter(req) };
-    const { name, email, phone, unit, role, isActive } = req.body;
+    const { name, unit, position, isActive } = req.body;
     const member = await Member.findOneAndUpdate(
       filter,
       {
         ...(name != null && { name: String(name).trim() }),
-        ...(email != null && { email }),
-        ...(phone != null && { phone }),
         ...(unit != null && { unit }),
-        ...(role != null && { role }),
+        ...(position != null && { position }),
         ...(isActive != null && { isActive }),
       },
       { new: true, runValidators: true }
     )
       .populate('unit', 'name code')
-      .populate('role', 'name code');
+      .populate('position', 'name code');
     if (!member) return res.status(404).json({ message: 'Member not found' });
     if (req.file) {
       member.profileImage = path.join('uploads', 'profiles', req.file.filename).replace(/\\/g, '/');

@@ -5,25 +5,23 @@ import api from '../../api/client';
 export default function MembersPage() {
   const [items, setItems] = useState([]);
   const [units, setUnits] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [positions, setPositions] = useState([]);
   const [form, setForm] = useState({
     name: '',
-    email: '',
-    phone: '',
     unit: '',
-    role: '',
+    position: '',
     profileImage: null,
   });
 
   const load = async () => {
-    const [m, u, r] = await Promise.all([
+    const [m, u, p] = await Promise.all([
       api.get('/members'),
       api.get('/units'),
-      api.get('/roles'),
+      api.get('/positions'),
     ]);
     setItems(m.data);
     setUnits(u.data);
-    setRoles(r.data);
+    setPositions(p.data);
   };
 
   useEffect(() => {
@@ -34,20 +32,16 @@ export default function MembersPage() {
     e.preventDefault();
     const fd = new FormData();
     fd.append('name', form.name);
-    fd.append('email', form.email);
-    fd.append('phone', form.phone);
     fd.append('unit', form.unit);
-    fd.append('role', form.role);
+    fd.append('position', form.position);
     if (form.profileImage) fd.append('profileImage', form.profileImage);
     await api.post('/members', fd, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     setForm({
       name: '',
-      email: '',
-      phone: '',
       unit: '',
-      role: '',
+      position: '',
       profileImage: null,
     });
     load();
@@ -65,7 +59,7 @@ export default function MembersPage() {
       <form className="card card-body mb-4 shadow-sm" onSubmit={save}>
         <h3 className="h6">New member</h3>
         <div className="row g-2 align-items-end">
-          <div className="col-md-2">
+          <div className="col-md-3">
             <label className="form-label small">Name</label>
             <input
               className="form-control"
@@ -74,23 +68,7 @@ export default function MembersPage() {
               required
             />
           </div>
-          <div className="col-md-2">
-            <label className="form-label small">Email</label>
-            <input
-              className="form-control"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </div>
-          <div className="col-md-2">
-            <label className="form-label small">Phone</label>
-            <input
-              className="form-control"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </div>
-          <div className="col-md-2">
+          <div className="col-md-3">
             <label className="form-label small">Unit</label>
             <select
               className="form-select"
@@ -106,23 +84,23 @@ export default function MembersPage() {
               ))}
             </select>
           </div>
-          <div className="col-md-2">
-            <label className="form-label small">Role</label>
+          <div className="col-md-3">
+            <label className="form-label small">Position</label>
             <select
               className="form-select"
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              value={form.position}
+              onChange={(e) => setForm({ ...form, position: e.target.value })}
               required
             >
               <option value="">—</option>
-              {roles.map((r) => (
-                <option key={r._id} value={r._id}>
-                  {r.name}
+              {positions.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.name}
                 </option>
               ))}
             </select>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-3">
             <label className="form-label small">Photo</label>
             <input
               type="file"
@@ -150,7 +128,7 @@ export default function MembersPage() {
               <th>Member ID</th>
               <th>Name</th>
               <th>Unit</th>
-              <th>Role</th>
+              <th>Position</th>
               <th />
             </tr>
           </thead>
@@ -160,7 +138,7 @@ export default function MembersPage() {
                 <td>{m.memberId}</td>
                 <td>{m.name}</td>
                 <td>{m.unit && m.unit.name}</td>
-                <td>{m.role && m.role.name}</td>
+                <td>{m.position && m.position.name}</td>
                 <td className="text-end">
                   <Link className="btn btn-sm btn-outline-primary me-1" to={`/members/${m._id}`}>
                     View

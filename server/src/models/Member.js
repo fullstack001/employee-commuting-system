@@ -4,10 +4,8 @@ const memberSchema = new mongoose.Schema(
   {
     memberId: { type: String, required: true, unique: true },
     name: { type: String, required: true, trim: true },
-    email: { type: String, trim: true, default: '' },
-    phone: { type: String, trim: true, default: '' },
     unit: { type: mongoose.Schema.Types.ObjectId, ref: 'Unit', required: true },
-    role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
+    position: { type: mongoose.Schema.Types.ObjectId, ref: 'Position', required: true },
     qrCodeText: { type: String, required: true, unique: true },
     qrCodeImage: { type: String, default: '' },
     profileImage: { type: String, default: '' },

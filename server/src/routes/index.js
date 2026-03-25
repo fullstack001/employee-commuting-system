@@ -5,7 +5,7 @@ const { upload } = require('../middlewares/upload');
 
 const authController = require('../controllers/authController');
 const unitsController = require('../controllers/unitsController');
-const rolesController = require('../controllers/rolesController');
+const positionsController = require('../controllers/positionsController');
 const membersController = require('../controllers/membersController');
 const attendanceController = require('../controllers/attendanceController');
 const reportsController = require('../controllers/reportsController');
@@ -25,10 +25,10 @@ router.post('/units', auth, allowRoles('super_admin', 'admin'), unitsController.
 router.put('/units/:id', auth, allowRoles('super_admin', 'admin'), unitsController.update);
 router.delete('/units/:id', auth, allowRoles('super_admin', 'admin'), unitsController.remove);
 
-router.get('/roles', auth, rolesController.list);
-router.post('/roles', auth, allowRoles('super_admin', 'admin'), rolesController.create);
-router.put('/roles/:id', auth, allowRoles('super_admin', 'admin'), rolesController.update);
-router.delete('/roles/:id', auth, allowRoles('super_admin', 'admin'), rolesController.remove);
+router.get('/positions', auth, positionsController.list);
+router.post('/positions', auth, allowRoles('super_admin', 'admin'), positionsController.create);
+router.put('/positions/:id', auth, allowRoles('super_admin', 'admin'), positionsController.update);
+router.delete('/positions/:id', auth, allowRoles('super_admin', 'admin'), positionsController.remove);
 
 router.get('/members', auth, membersController.list);
 router.get('/members/:id', auth, membersController.getOne);

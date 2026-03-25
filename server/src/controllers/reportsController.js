@@ -23,9 +23,9 @@ async function fetchAttendanceRange(req, query) {
     filter.date = { $gte: start, $lte: end };
   }
   return Attendance.find(filter)
-    .populate('member', 'name memberId email')
+    .populate('member', 'name memberId')
     .populate('unit', 'name code')
-    .populate('role', 'name code')
+    .populate('position', 'name code')
     .populate('addedBy', 'name email')
     .sort({ date: 1, time: 1 });
 }
@@ -41,7 +41,7 @@ exports.daily = async (req, res) => {
     const rows = await Attendance.find(filter)
       .populate('member', 'name memberId')
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ time: 1 });
     res.json({ date, items: rows });
   } catch (err) {
@@ -63,7 +63,7 @@ exports.monthly = async (req, res) => {
     const rows = await Attendance.find(filter)
       .populate('member', 'name memberId')
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ date: 1, time: 1 });
     res.json({ month: ym, from: start, to: end, items: rows, count: rows.length });
   } catch (err) {
@@ -84,7 +84,7 @@ exports.unitReport = async (req, res) => {
     }
     const rows = await Attendance.find(filter)
       .populate('member', 'name memberId')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ date: -1, time: -1 });
     res.json(rows);
   } catch (err) {
@@ -127,7 +127,7 @@ exports.exportExcel = async (req, res) => {
       { header: 'Member ID', key: 'memberId', width: 18 },
       { header: 'Member Name', key: 'memberName', width: 24 },
       { header: 'Unit', key: 'unit', width: 16 },
-      { header: 'Role', key: 'role', width: 16 },
+      { header: 'Position', key: 'position', width: 16 },
       { header: 'Date', key: 'date', width: 12 },
       { header: 'Session', key: 'session', width: 22 },
       { header: 'Time', key: 'time', width: 22 },
@@ -140,7 +140,7 @@ exports.exportExcel = async (req, res) => {
         memberId: r.member && r.member.memberId,
         memberName: r.member && r.member.name,
         unit: r.unit && r.unit.name,
-        role: r.role && r.role.name,
+        position: r.position && r.position.name,
         date: r.date,
         session: r.session,
         time: r.time ? new Date(r.time).toISOString() : '',

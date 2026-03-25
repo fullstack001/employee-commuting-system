@@ -67,7 +67,7 @@ Create additional **User** accounts by inserting into MongoDB or extending the A
 Base path: `/api`
 
 - `POST /auth/login`, `GET /auth/me`
-- `GET|POST|PUT|DELETE /units`, `/roles`
+- `GET|POST|PUT|DELETE /units`, `/positions`
 - `GET|POST|PUT|DELETE /members`, `GET /members/:id/qrcode`
 - `POST /attendance/scan`, `POST /attendance/manual`, `GET /attendance`, `/attendance/daily`, etc.
 - `GET /reports/*`, `GET /reports/export/excel|pdf`

@@ -1,9 +1,9 @@
-const Role = require('../models/Role');
+const Position = require('../models/Position');
 
 exports.list = async (req, res) => {
   try {
-    const roles = await Role.find().sort({ name: 1 });
-    res.json(roles);
+    const positions = await Position.find().sort({ name: 1 });
+    res.json(positions);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -13,14 +13,14 @@ exports.create = async (req, res) => {
   try {
     const { name, code, description } = req.body;
     if (!name || !code) return res.status(400).json({ message: 'Name and code required' });
-    const role = await Role.create({
+    const position = await Position.create({
       name: String(name).trim(),
       code: String(code).trim(),
       description: description || '',
     });
-    res.status(201).json(role);
+    res.status(201).json(position);
   } catch (err) {
-    if (err.code === 11000) return res.status(400).json({ message: 'Role code already exists' });
+    if (err.code === 11000) return res.status(400).json({ message: 'Position code already exists' });
     res.status(500).json({ message: err.message });
   }
 };
@@ -28,7 +28,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const { name, code, description, isActive } = req.body;
-    const role = await Role.findByIdAndUpdate(
+    const position = await Position.findByIdAndUpdate(
       req.params.id,
       {
         ...(name != null && { name: String(name).trim() }),
@@ -38,18 +38,18 @@ exports.update = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    if (!role) return res.status(404).json({ message: 'Role not found' });
-    res.json(role);
+    if (!position) return res.status(404).json({ message: 'Position not found' });
+    res.json(position);
   } catch (err) {
-    if (err.code === 11000) return res.status(400).json({ message: 'Role code already exists' });
+    if (err.code === 11000) return res.status(400).json({ message: 'Position code already exists' });
     res.status(500).json({ message: err.message });
   }
 };
 
 exports.remove = async (req, res) => {
   try {
-    const role = await Role.findByIdAndDelete(req.params.id);
-    if (!role) return res.status(404).json({ message: 'Role not found' });
+    const position = await Position.findByIdAndDelete(req.params.id);
+    if (!position) return res.status(404).json({ message: 'Position not found' });
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });

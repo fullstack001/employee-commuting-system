@@ -1,8 +1,19 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Position = require('../models/Position');
 const AttendanceSettings = require('../models/AttendanceSettings');
 
 async function seedAdmin() {
+  const posCount = await Position.countDocuments();
+  if (posCount === 0) {
+    await Position.create({
+      name: 'Staff',
+      code: 'STAFF',
+      description: 'Default position — add more under Positions',
+    });
+    console.log('Seeded default position: Staff (STAFF)');
+  }
+
   const count = await User.countDocuments();
   if (count > 0) return;
 

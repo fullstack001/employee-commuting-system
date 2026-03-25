@@ -56,16 +56,10 @@ export default function MemberDetail() {
                 <strong>QR text:</strong> {member.qrCodeText}
               </p>
               <p>
-                <strong>Email:</strong> {member.email || '—'}
-              </p>
-              <p>
-                <strong>Phone:</strong> {member.phone || '—'}
-              </p>
-              <p>
                 <strong>Unit:</strong> {member.unit && member.unit.name}
               </p>
               <p>
-                <strong>Role:</strong> {member.role && member.role.name}
+                <strong>Position:</strong> {member.position && member.position.name}
               </p>
               {member.profileImage && (
                 <p>

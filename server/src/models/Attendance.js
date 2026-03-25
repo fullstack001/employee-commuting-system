@@ -4,7 +4,7 @@ const attendanceSchema = new mongoose.Schema(
   {
     member: { type: mongoose.Schema.Types.ObjectId, ref: 'Member', required: true },
     unit: { type: mongoose.Schema.Types.ObjectId, ref: 'Unit', required: true },
-    role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
+    position: { type: mongoose.Schema.Types.ObjectId, ref: 'Position', required: true },
     date: { type: String, required: true },
     session: {
       type: String,

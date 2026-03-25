@@ -13,7 +13,7 @@ exports.scan = async (req, res) => {
     const settings = await getSingleton();
     const member = await Member.findOne({ qrCodeText: String(qrCodeText).trim(), isActive: true })
       .populate('unit')
-      .populate('role');
+      .populate('position');
     if (!member) {
       return res.status(404).json({ success: false, message: 'Invalid QR code or inactive member' });
     }
@@ -35,7 +35,7 @@ exports.scan = async (req, res) => {
     const rec = await Attendance.create({
       member: member._id,
       unit: member.unit._id,
-      role: member.role._id,
+      position: member.position._id,
       date: dateStr,
       session,
       time: eventTime,
@@ -75,7 +75,7 @@ exports.manual = async (req, res) => {
     if (!memberId || !date || !session || !time) {
       return res.status(400).json({ message: 'memberId, date, session, and time are required' });
     }
-    const member = await Member.findById(memberId).populate('unit').populate('role');
+    const member = await Member.findById(memberId).populate('unit').populate('position');
     if (!member || !member.isActive) {
       return res.status(404).json({ message: 'Member not found or inactive' });
     }
@@ -94,7 +94,7 @@ exports.manual = async (req, res) => {
     const rec = await Attendance.create({
       member: member._id,
       unit: member.unit._id,
-      role: member.role._id,
+      position: member.position._id,
       date: dateStr,
       session,
       time: eventTime,
@@ -125,9 +125,9 @@ exports.list = async (req, res) => {
     const skip = (page - 1) * limit;
     const [items, total] = await Promise.all([
       Attendance.find(filter)
-        .populate('member', 'name memberId email')
+        .populate('member', 'name memberId')
         .populate('unit', 'name code')
-        .populate('role', 'name code')
+        .populate('position', 'name code')
         .populate('addedBy', 'name email')
         .sort({ date: -1, time: -1 })
         .skip(skip)
@@ -152,7 +152,7 @@ exports.daily = async (req, res) => {
     const rows = await Attendance.find(filter)
       .populate('member', 'name memberId')
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ time: 1 });
     res.json({ date, items: rows });
   } catch (err) {
@@ -175,7 +175,7 @@ exports.byMember = async (req, res) => {
     }
     const rows = await Attendance.find(simpleFilter)
       .populate('unit', 'name code')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ date: -1, time: -1 });
     res.json(rows);
   } catch (err) {
@@ -192,7 +192,7 @@ exports.byUnit = async (req, res) => {
     if (req.query.date) filter.date = req.query.date;
     const rows = await Attendance.find(filter)
       .populate('member', 'name memberId')
-      .populate('role', 'name code')
+      .populate('position', 'name code')
       .sort({ date: -1, time: -1 });
     res.json(rows);
   } catch (err) {

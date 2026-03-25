@@ -3,7 +3,7 @@ import { NavLink, Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import Dashboard from '../pages/dashboard/Dashboard';
 import UnitsPage from '../pages/units/UnitsPage';
-import RolesPage from '../pages/roles/RolesPage';
+import PositionsPage from '../pages/positions/PositionsPage';
 import MembersPage from '../pages/members/MembersPage';
 import MemberDetail from '../pages/members/MemberDetail';
 import ScannerPage from '../pages/attendance/ScannerPage';
@@ -42,8 +42,8 @@ export default function Layout() {
                 <NavLink to="/units" activeClassName="active" className="d-block rounded px-3 py-2">
                   Units
                 </NavLink>
-                <NavLink to="/roles" activeClassName="active" className="d-block rounded px-3 py-2">
-                  Roles
+                <NavLink to="/positions" activeClassName="active" className="d-block rounded px-3 py-2">
+                  Positions
                 </NavLink>
                 <NavLink to="/members" activeClassName="active" className="d-block rounded px-3 py-2">
                   Members
@@ -93,7 +93,7 @@ export default function Layout() {
           <Switch>
             <Route exact path="/" component={Dashboard} />
             <PrivateRoute exact path="/units" component={UnitsPage} roles={['super_admin', 'admin']} />
-            <PrivateRoute exact path="/roles" component={RolesPage} roles={['super_admin', 'admin']} />
+            <PrivateRoute exact path="/positions" component={PositionsPage} roles={['super_admin', 'admin']} />
             <PrivateRoute exact path="/members" component={MembersPage} roles={['super_admin', 'admin']} />
             <PrivateRoute path="/members/:id" component={MemberDetail} roles={['super_admin', 'admin']} />
             <PrivateRoute path="/attendance/scan" component={ScannerPage} roles={['super_admin', 'admin']} />

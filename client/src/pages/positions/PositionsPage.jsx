@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/client';
 
-export default function RolesPage() {
+export default function PositionsPage() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({ name: '', code: '', description: '' });
   const [editing, setEditing] = useState(null);
 
   const load = async () => {
-    const { data } = await api.get('/roles');
+    const { data } = await api.get('/positions');
     setItems(data);
   };
 
@@ -18,31 +18,31 @@ export default function RolesPage() {
   const save = async (e) => {
     e.preventDefault();
     if (editing) {
-      await api.put(`/roles/${editing._id}`, form);
+      await api.put(`/positions/${editing._id}`, form);
     } else {
-      await api.post('/roles', form);
+      await api.post('/positions', form);
     }
     setForm({ name: '', code: '', description: '' });
     setEditing(null);
     load();
   };
 
-  const startEdit = (r) => {
-    setEditing(r);
-    setForm({ name: r.name, code: r.code, description: r.description || '' });
+  const startEdit = (p) => {
+    setEditing(p);
+    setForm({ name: p.name, code: p.code, description: p.description || '' });
   };
 
   const remove = async (id) => {
-    if (!window.confirm('Delete this role?')) return;
-    await api.delete(`/roles/${id}`);
+    if (!window.confirm('Delete this position?')) return;
+    await api.delete(`/positions/${id}`);
     load();
   };
 
   return (
     <div>
-      <h2 className="h4 mb-3">Roles</h2>
+      <h2 className="h4 mb-3">Positions</h2>
       <form className="card card-body mb-4 shadow-sm" onSubmit={save}>
-        <h3 className="h6">{editing ? 'Edit role' : 'New role'}</h3>
+        <h3 className="h6">{editing ? 'Edit position' : 'New position'}</h3>
         <div className="row g-2">
           <div className="col-md-4">
             <input
@@ -99,15 +99,15 @@ export default function RolesPage() {
             </tr>
           </thead>
           <tbody>
-            {items.map((r) => (
-              <tr key={r._id}>
-                <td>{r.name}</td>
-                <td>{r.code}</td>
+            {items.map((p) => (
+              <tr key={p._id}>
+                <td>{p.name}</td>
+                <td>{p.code}</td>
                 <td className="text-end">
-                  <button type="button" className="btn btn-sm btn-outline-primary me-1" onClick={() => startEdit(r)}>
+                  <button type="button" className="btn btn-sm btn-outline-primary me-1" onClick={() => startEdit(p)}>
                     Edit
                   </button>
-                  <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => remove(r._id)}>
+                  <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => remove(p._id)}>
                     Delete
                   </button>
                 </td>
