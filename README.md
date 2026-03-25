@@ -47,6 +47,9 @@ Web app for employee attendance: **React (Create React App / `react-scripts`)** 
 | `MONGODB_URI`  | MongoDB connection string              |
 | `JWT_SECRET`   | Secret for JWT signing                 |
 | `CLIENT_URL`   | CORS origin (e.g. `http://localhost:3000`) |
+| `QR_LOGO_PATH` | (Optional) Absolute path to PNG/JPG logo overlaid on member QR codes |
+
+**Member QR images** are PNGs with a scannable QR (error correction **H**), optional **center logo** (`server/assets/logo.png` or `QR_LOGO_PATH`), and a footer in three lines: **unit** (uppercase), **position**, **name**.
 
 **Client (`client/.env` — optional)**
 
