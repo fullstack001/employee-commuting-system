@@ -1,0 +1,47 @@
+:root {
+  --ecs-sidebar: #1a2332;
+  --ecs-accent: #3d8bfd;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f4f6f9;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.ecs-sidebar {
+  background: var(--ecs-sidebar);
+  min-height: 100vh;
+  color: #e8eef7;
+}
+
+.ecs-sidebar a {
+  color: #c8d4e8;
+  text-decoration: none;
+  display: block;
+  padding: 0.55rem 1rem;
+  border-radius: 0.35rem;
+}
+
+.ecs-sidebar a:hover,
+.ecs-sidebar a.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.ecs-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ecs-main {
+  padding: 1.5rem;
+}
+
+.card-stat {
+  border: none;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
+}
