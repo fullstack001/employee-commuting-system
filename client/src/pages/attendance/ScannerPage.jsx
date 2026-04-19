@@ -14,6 +14,7 @@ export default function ScannerPage() {
   const [msg, setMsg] = useState(null);
   const [scanning, setScanning] = useState(false);
   const html5Ref = useRef(null);
+  const processingRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -39,6 +40,17 @@ export default function ScannerPage() {
     }
   };
 
+  const handleScan = (decodedText) => {
+    if (processingRef.current) return;
+
+    processingRef.current = true;
+    onScan(decodedText).finally(() => {
+      setTimeout(() => {
+        processingRef.current = false;
+      }, 500);
+    });
+  };
+
   const start = async () => {
     setMsg(null);
     const regionId = 'qr-reader';
@@ -55,7 +67,7 @@ export default function ScannerPage() {
       { facingMode: 'environment' },
       { fps: 10, qrbox: { width: 250, height: 250 } },
       (text) => {
-        onScan(text);
+        handleScan(text);
       },
       () => {}
     );

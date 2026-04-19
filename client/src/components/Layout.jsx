@@ -14,6 +14,7 @@ import AnalyticsPage from '../pages/analytics/AnalyticsPage';
 import SettingsPage from '../pages/settings/SettingsPage';
 import { useAuth } from '../context/AuthContext';
 
+
 export default function Layout() {
   var auth = useAuth();
   var user = auth.user;
