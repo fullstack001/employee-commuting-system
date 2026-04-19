@@ -1,5 +1,7 @@
 const path = require('path');
 const Member = require('../models/Member');
+const Unit = require('../models/Unit');
+const Position = require('../models/Position');
 const { generateMemberQrFiles } = require('../services/qrService');
 
 async function nextMemberId() {
@@ -60,7 +62,15 @@ exports.create = async (req, res) => {
     }
     const memberId = await nextMemberId();
     const qrCodeText = memberId;
-    const { relativePath } = await generateMemberQrFiles(memberId, qrCodeText);
+    const unitDoc = await Unit.findById(unit);
+    const positionDoc = await Position.findById(position);
+    const { relativePath } = await generateMemberQrFiles({
+      memberId: memberId,
+      qrCodeText: qrCodeText,
+      unitName: unitDoc ? unitDoc.name : '',
+      positionName: positionDoc ? positionDoc.name : '',
+      memberName: String(name).trim(),
+    });
     let profileImage = '';
     if (req.file) {
       profileImage = path.join('uploads', 'profiles', req.file.filename).replace(/\\/g, '/');
@@ -106,6 +116,17 @@ exports.update = async (req, res) => {
     if (req.file) {
       member.profileImage = path.join('uploads', 'profiles', req.file.filename).replace(/\\/g, '/');
       await member.save();
+    }
+    var regen =
+      name != null || unit != null || position != null;
+    if (regen && member.qrCodeImage) {
+      await generateMemberQrFiles({
+        memberId: member.memberId,
+        qrCodeText: member.qrCodeText,
+        unitName: member.unit && member.unit.name,
+        positionName: member.position && member.position.name,
+        memberName: member.name,
+      });
     }
     res.json(member);
   } catch (err) {
