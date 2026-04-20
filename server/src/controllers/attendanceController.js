@@ -1,7 +1,7 @@
 const Attendance = require('../models/Attendance');
 const Member = require('../models/Member');
 const { getSingleton } = require('./settingsController');
-const { getDateStringInTz, computeScanStatus, computeManualEntryStatus } = require('../utils/attendanceLogic');
+const { getDateString, computeScanStatus, computeManualEntryStatus } = require('../utils/attendanceLogic');
 const { unitScope } = require('../utils/scope');
 
 exports.scan = async (req, res) => {
@@ -18,7 +18,7 @@ exports.scan = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Invalid QR code or inactive member' });
     }
     const eventTime = new Date();
-    const dateStr = getDateStringInTz(eventTime, settings.timezone);
+    const dateStr = getDateString(eventTime);
     const dup = await Attendance.findOne({
       member: member._id,
       date: dateStr,
@@ -144,7 +144,7 @@ exports.daily = async (req, res) => {
   try {
     const settings = await getSingleton();
     const date =
-      req.query.date || getDateStringInTz(new Date(), settings.timezone);
+      req.query.date || getDateString(new Date());
     const filter = { date, ...unitScope(req) };
     if (req.query.unitId && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
       filter.unit = req.query.unitId;

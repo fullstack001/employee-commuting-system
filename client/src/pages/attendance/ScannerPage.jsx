@@ -9,12 +9,29 @@ const SESSIONS = [
   { value: 'afternoon_check_out', label: 'Afternoon check-out' },
 ];
 
+function playSuccessSound() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+  oscillator.type = 'sine';
+
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+
 export default function ScannerPage() {
   const [session, setSession] = useState('morning_check_in');
   const [msg, setMsg] = useState(null);
   const [scanning, setScanning] = useState(false);
   const html5Ref = useRef(null);
-  const processingRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -33,23 +50,15 @@ export default function ScannerPage() {
         session,
       });
       setMsg({ type: 'success', text: data.message || 'Recorded', detail: data.data });
+      playSuccessSound();
     } catch (e) {
+      playSuccessSound();
       const m =
         (e.response && e.response.data && e.response.data.message) || e.message || 'Error';
       setMsg({ type: 'danger', text: m });
     }
   };
 
-  const handleScan = (decodedText) => {
-    if (processingRef.current) return;
-
-    processingRef.current = true;
-    onScan(decodedText).finally(() => {
-      setTimeout(() => {
-        processingRef.current = false;
-      }, 500);
-    });
-  };
 
   const start = async () => {
     setMsg(null);
@@ -67,7 +76,8 @@ export default function ScannerPage() {
       { facingMode: 'environment' },
       { fps: 10, qrbox: { width: 250, height: 250 } },
       (text) => {
-        handleScan(text);
+        console.log('QR code detected:', text);
+        onScan(text);
       },
       () => {}
     );

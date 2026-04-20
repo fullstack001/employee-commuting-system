@@ -6,7 +6,6 @@ async function getSingleton() {
     doc = await AttendanceSettings.create({
       morningCheckInDeadline: '09:00',
       afternoonCheckInDeadline: '13:00',
-      timezone: 'UTC',
       allowDuplicateScanProtection: true,
       allowAdminManualAttendance: false,
     });
@@ -28,7 +27,6 @@ exports.update = async (req, res) => {
     const {
       morningCheckInDeadline,
       afternoonCheckInDeadline,
-      timezone,
       allowDuplicateScanProtection,
       allowAdminManualAttendance,
     } = req.body;
@@ -36,7 +34,6 @@ exports.update = async (req, res) => {
     if (!doc) doc = new AttendanceSettings();
     if (morningCheckInDeadline != null) doc.morningCheckInDeadline = morningCheckInDeadline;
     if (afternoonCheckInDeadline != null) doc.afternoonCheckInDeadline = afternoonCheckInDeadline;
-    if (timezone != null) doc.timezone = timezone;
     if (allowDuplicateScanProtection != null) {
       doc.allowDuplicateScanProtection = Boolean(allowDuplicateScanProtection);
     }

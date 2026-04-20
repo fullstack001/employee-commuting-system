@@ -9,6 +9,24 @@ const SESSIONS = [
   { value: 'afternoon_check_out', label: 'Afternoon check-out' },
 ];
 
+function playSuccessSound() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+  oscillator.type = 'sine';
+
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+
 export default function JsQrScannerPage() {
   const [session, setSession] = useState('morning_check_in');
   const [msg, setMsg] = useState(null);
@@ -17,6 +35,9 @@ export default function JsQrScannerPage() {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const animationRef = useRef(null);
+  const scanningRef = useRef(false);
+  const lastScannedRef = useRef(null);
+  const lastScanTimerRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -32,21 +53,23 @@ export default function JsQrScannerPage() {
         session,
       });
       setMsg({ type: 'success', text: data.message || 'Recorded', detail: data.data });
-      return true;
+      playSuccessSound();
     } catch (e) {
+      playSuccessSound();
       const m =
         (e.response && e.response.data && e.response.data.message) || e.message || 'Error';
       setMsg({ type: 'danger', text: m });
-      return false;
     }
   };
 
-  const scan = async () => {
-    if (!scanning) return;
-
+  const scan = () => {
+    if (!scanningRef.current) return;
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    if (!canvas || !video) return;
+    if (!canvas || !video) {
+      animationRef.current = requestAnimationFrame(scan);
+      return;
+    }
 
     const canvasContext = canvas.getContext('2d');
     canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -54,12 +77,22 @@ export default function JsQrScannerPage() {
     const code = jsQR(imageData.data, imageData.width, imageData.height);
 
     if (code) {
-      await onScan(code.data);
-      console.log(code.data);
-      animationRef.current = requestAnimationFrame(scan);
-    } else {
-      animationRef.current = requestAnimationFrame(scan);
+      const decodedText = code.data;
+      if (decodedText !== lastScannedRef.current) {
+        lastScannedRef.current = decodedText;
+        onScan(decodedText);
+        console.log(decodedText);
+        if (lastScanTimerRef.current) {
+          clearTimeout(lastScanTimerRef.current);
+        }
+        lastScanTimerRef.current = setTimeout(() => {
+          lastScannedRef.current = null;
+          lastScanTimerRef.current = null;
+        }, 1500);
+      }
     }
+
+    animationRef.current = requestAnimationFrame(scan);
   };
 
   const startScanning = async () => {
@@ -70,7 +103,8 @@ export default function JsQrScannerPage() {
       });
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
-      videoRef.current.play();
+      await videoRef.current.play();
+      scanningRef.current = true;
       setScanning(true);
       scan();
     } catch (error) {
@@ -79,6 +113,7 @@ export default function JsQrScannerPage() {
   };
 
   const stopScanning = () => {
+    scanningRef.current = false;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
@@ -87,6 +122,11 @@ export default function JsQrScannerPage() {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
+    if (lastScanTimerRef.current) {
+      clearTimeout(lastScanTimerRef.current);
+      lastScanTimerRef.current = null;
+    }
+    lastScannedRef.current = null;
     setScanning(false);
   };
 

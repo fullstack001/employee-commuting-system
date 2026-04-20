@@ -5,7 +5,6 @@ export default function SettingsPage() {
   const [form, setForm] = useState({
     morningCheckInDeadline: '09:00',
     afternoonCheckInDeadline: '13:00',
-    timezone: 'UTC',
     allowDuplicateScanProtection: true,
     allowAdminManualAttendance: false,
   });
@@ -17,7 +16,6 @@ export default function SettingsPage() {
       setForm({
         morningCheckInDeadline: d.morningCheckInDeadline,
         afternoonCheckInDeadline: d.afternoonCheckInDeadline,
-        timezone: d.timezone,
         allowDuplicateScanProtection: d.allowDuplicateScanProtection,
         allowAdminManualAttendance: d.allowAdminManualAttendance,
       });
@@ -56,14 +54,6 @@ export default function SettingsPage() {
             className="form-control"
             value={form.afternoonCheckInDeadline}
             onChange={(e) => setForm({ ...form, afternoonCheckInDeadline: e.target.value })}
-          />
-        </div>
-        <div className="mb-2">
-          <label className="form-label">Timezone (IANA, e.g. UTC, Asia/Riyadh)</label>
-          <input
-            className="form-control"
-            value={form.timezone}
-            onChange={(e) => setForm({ ...form, timezone: e.target.value })}
           />
         </div>
         <div className="form-check mb-2">

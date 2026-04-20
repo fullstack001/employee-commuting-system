@@ -1,4 +1,4 @@
-const moment = require('moment-timezone');
+const moment = require('moment');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const Attendance = require('../models/Attendance');
@@ -7,7 +7,6 @@ const { unitScope } = require('../utils/scope');
 
 async function fetchAttendanceRange(req, query) {
   const settings = await getSingleton();
-  const tz = settings.timezone || 'UTC';
   const scope = unitScope(req);
   const filter = { ...scope };
   if (query.unitId && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
@@ -18,8 +17,8 @@ async function fetchAttendanceRange(req, query) {
     if (query.dateFrom) filter.date.$gte = query.dateFrom;
     if (query.dateTo) filter.date.$lte = query.dateTo;
   } else {
-    const end = moment().tz(tz).format('YYYY-MM-DD');
-    const start = moment().tz(tz).subtract(30, 'days').format('YYYY-MM-DD');
+    const end = moment().format('YYYY-MM-DD');
+    const start = moment().subtract(30, 'days').format('YYYY-MM-DD');
     filter.date = { $gte: start, $lte: end };
   }
   return Attendance.find(filter)
@@ -33,7 +32,7 @@ async function fetchAttendanceRange(req, query) {
 exports.daily = async (req, res) => {
   try {
     const settings = await getSingleton();
-    const date = req.query.date || require('../utils/attendanceLogic').getDateStringInTz(new Date(), settings.timezone);
+    const date = req.query.date || require('../utils/attendanceLogic').getDateString(new Date());
     const filter = { date, ...unitScope(req) };
     if (req.query.unitId && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
       filter.unit = req.query.unitId;
@@ -95,7 +94,7 @@ exports.unitReport = async (req, res) => {
 exports.lateMembers = async (req, res) => {
   try {
     const settings = await getSingleton();
-    const date = req.query.date || require('../utils/attendanceLogic').getDateStringInTz(new Date(), settings.timezone);
+    const date = req.query.date || require('../utils/attendanceLogic').getDateString(new Date());
     const filter = {
       date,
       status: 'late',

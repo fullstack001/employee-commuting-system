@@ -4,7 +4,6 @@ const attendanceSettingsSchema = new mongoose.Schema(
   {
     morningCheckInDeadline: { type: String, default: '09:00' },
     afternoonCheckInDeadline: { type: String, default: '13:00' },
-    timezone: { type: String, default: 'UTC' },
     allowDuplicateScanProtection: { type: Boolean, default: true },
     allowAdminManualAttendance: { type: Boolean, default: false },
   },

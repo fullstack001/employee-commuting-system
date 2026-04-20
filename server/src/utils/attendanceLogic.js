@@ -1,15 +1,14 @@
-const moment = require('moment-timezone');
+const moment = require('moment');
 
-function getDateStringInTz(date, tz) {
-  return moment(date).tz(tz).format('YYYY-MM-DD');
+function getDateString(date) {
+  return moment(date).format('YYYY-MM-DD');
 }
 
 function computeScanStatus({ session, eventTime, settings }) {
-  const tz = settings.timezone || 'UTC';
   if (session === 'morning_check_out' || session === 'afternoon_check_out') {
     return 'checked_out';
   }
-  const m = moment(eventTime).tz(tz);
+  const m = moment(eventTime);
   const dateStr = m.format('YYYY-MM-DD');
   const deadlineStr =
     session === 'morning_check_in'
@@ -18,12 +17,11 @@ function computeScanStatus({ session, eventTime, settings }) {
   const parts = deadlineStr.split(':').map((p) => parseInt(p, 10));
   const h = parts[0] || 9;
   const min = parts[1] || 0;
-  const deadline = moment.tz(
+  const deadline = moment(
     `${dateStr} ${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`,
-    'YYYY-MM-DD HH:mm:ss',
-    tz
+    'YYYY-MM-DD HH:mm:ss'
   );
-  const actual = moment(eventTime).tz(tz);
+  const actual = moment(eventTime);
   return actual.isAfter(deadline) ? 'late' : 'on_time';
 }
 
@@ -33,7 +31,7 @@ function computeManualEntryStatus({ session, eventTime, settings }) {
 }
 
 module.exports = {
-  getDateStringInTz,
+  getDateString,
   computeScanStatus,
   computeManualEntryStatus,
 };

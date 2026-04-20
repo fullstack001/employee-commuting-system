@@ -9,6 +9,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password required' });
     }
     const user = await User.findOne({ email: String(email).toLowerCase().trim() }).populate('unit');
+    console.log(user);
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }

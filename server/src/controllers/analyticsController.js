@@ -1,15 +1,15 @@
-const moment = require('moment-timezone');
+const moment = require('moment');
 const Attendance = require('../models/Attendance');
 const Member = require('../models/Member');
 const Unit = require('../models/Unit');
 const { getSingleton } = require('./settingsController');
-const { getDateStringInTz } = require('../utils/attendanceLogic');
+const { getDateString } = require('../utils/attendanceLogic');
 const { unitScope } = require('../utils/scope');
 
 exports.dashboard = async (req, res) => {
   try {
     const settings = await getSingleton();
-    const today = getDateStringInTz(new Date(), settings.timezone);
+    const today = getDateString(new Date());
     const scope = unitScope(req);
     const unitFilter = Object.keys(scope).length ? scope : {};
 
@@ -64,7 +64,7 @@ exports.dashboard = async (req, res) => {
 exports.unitSummary = async (req, res) => {
   try {
     const settings = await getSingleton();
-    const today = getDateStringInTz(new Date(), settings.timezone);
+    const today = getDateString(new Date());
     const scope = unitScope(req);
     const units = await Unit.find(Object.keys(scope).length ? { _id: scope.unit } : {}).sort({ name: 1 });
     const out = [];
@@ -91,8 +91,7 @@ exports.monthlyTrend = async (req, res) => {
   try {
     const settings = await getSingleton();
     const months = parseInt(req.query.months, 10) || 6;
-    const tz = settings.timezone || 'UTC';
-    const end = moment().tz(tz).startOf('month');
+    const end = moment().startOf('month');
     const points = [];
     for (let i = months - 1; i >= 0; i -= 1) {
       const m = end.clone().subtract(i, 'months');
@@ -114,8 +113,8 @@ exports.monthlyTrend = async (req, res) => {
 exports.lateSummary = async (req, res) => {
   try {
     const settings = await getSingleton();
-    const from = req.query.from || moment().tz(settings.timezone).startOf('month').format('YYYY-MM-DD');
-    const to = req.query.to || moment().tz(settings.timezone).format('YYYY-MM-DD');
+    const from = req.query.from || moment().startOf('month').format('YYYY-MM-DD');
+    const to = req.query.to || moment().format('YYYY-MM-DD');
     const scope = unitScope(req);
     const rows = await Attendance.aggregate([
       {

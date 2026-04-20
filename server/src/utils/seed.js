@@ -32,7 +32,6 @@ async function seedAdmin() {
     await AttendanceSettings.create({
       morningCheckInDeadline: '09:00',
       afternoonCheckInDeadline: '13:00',
-      timezone: 'UTC',
       allowDuplicateScanProtection: true,
       allowAdminManualAttendance: false,
     });
