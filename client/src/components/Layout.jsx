@@ -9,6 +9,7 @@ import MemberDetail from '../pages/members/MemberDetail';
 import ScannerPage from '../pages/attendance/ScannerPage';
 import ManualAttendancePage from '../pages/attendance/ManualAttendancePage';
 import DailyAttendancePage from '../pages/attendance/DailyAttendancePage';
+import ZxingScannerPage from '../pages/attendance/ZxingScannerPage';
 import ReportsPage from '../pages/reports/ReportsPage';
 import AnalyticsPage from '../pages/analytics/AnalyticsPage';
 import SettingsPage from '../pages/settings/SettingsPage';
@@ -56,6 +57,9 @@ export default function Layout() {
                 <NavLink to="/attendance/scan" activeClassName="active" className="d-block rounded px-3 py-2">
                   Scanner
                 </NavLink>
+                <NavLink to="/attendance/zxing-scan" activeClassName="active" className="d-block rounded px-3 py-2">
+                  ZXing Scanner
+                </NavLink>
                 <NavLink to="/attendance/manual" activeClassName="active" className="d-block rounded px-3 py-2">
                   Manual
                 </NavLink>
@@ -98,6 +102,7 @@ export default function Layout() {
             <PrivateRoute exact path="/members" component={MembersPage} roles={['super_admin', 'admin']} />
             <PrivateRoute path="/members/:id" component={MemberDetail} roles={['super_admin', 'admin']} />
             <PrivateRoute path="/attendance/scan" component={ScannerPage} roles={['super_admin', 'admin']} />
+            <PrivateRoute path="/attendance/zxing-scan" component={ZxingScannerPage} roles={['super_admin', 'admin']} />
             <PrivateRoute path="/attendance/manual" component={ManualAttendancePage} roles={['super_admin', 'admin']} />
             <Route path="/attendance/daily" component={DailyAttendancePage} />
             <PrivateRoute exact path="/reports" component={ReportsPage} roles={['super_admin', 'admin']} />
